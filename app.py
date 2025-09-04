@@ -1,9 +1,8 @@
 import streamlit as st
-from PIL import Image
+from PIL import Image, ImageOps
 import tensorflow as tf
 import numpy as np
 import tensorflow_hub as hub
-import cv2
 from streamlit_option_menu import option_menu
 
 class_info = {
@@ -20,7 +19,6 @@ class_info = {
     'Vascular Lesions (Lesio Vascularis)': 'Varied (mostly benign, rarely malignant)'
 }
 
-
 @st.cache_resource
 def load_trained_model():
     try:
@@ -29,15 +27,13 @@ def load_trained_model():
         st.error(f'❌ Gagal memuat model: {e}')
         return None
 
-
 def predict_image(image, model):
-    img = np.array(image)
-    img = cv2.resize(img, (224, 224))
-    img = img / 255.0
+    # Resize dengan Pillow agar kompatibel di Streamlit Cloud
+    img = ImageOps.fit(image, (224, 224))
+    img = np.array(img) / 255.0
     img = np.expand_dims(img, axis=0)
     prediction = model.predict(img)
     return prediction
-
 
 def show_home():
     st.markdown("## Selamat Datang di Aplikasi Prediksi Kanker Kulit")
@@ -49,9 +45,7 @@ def show_home():
     """, unsafe_allow_html=True)
     st.caption("© Firman Nurcahyo, 2025")
 
-
 def show_about():
-
     st.markdown("""
         <div style='text-align: center; font-size: 18px; padding: 10px;'>
             <b>Implementasi Arsitektur Xception pada Deep Learning CNN<br>
@@ -75,7 +69,6 @@ def show_about():
         </div>
         <br><center><small>© 2025 - Universitas Gunadarma</small></center>
     """, unsafe_allow_html=True)
-
 
 def show_prediction(model):
     st.markdown("## 🔍 Prediksi Kondisi Kanker Kulit")
@@ -112,7 +105,6 @@ def show_prediction(model):
                 unsafe_allow_html=True
             )
 
-
 def main():
     st.set_page_config(page_title="Klasifikasi Kanker Kulit",
                        layout="wide", page_icon="🔬")
@@ -141,8 +133,7 @@ def main():
 
     model = load_trained_model()
     if model is None:
-        st.error(
-            "Model tidak ditemukan. Pastikan file model '8981-remnant.h5' tersedia.")
+        st.error("Model tidak ditemukan. Pastikan file model 'model2.h5' tersedia.")
         return
 
     if selected == "Beranda":
@@ -151,7 +142,6 @@ def main():
         show_about()
     elif selected == "Prediksi":
         show_prediction(model)
-
 
 if __name__ == '__main__':
     main()
