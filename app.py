@@ -22,7 +22,7 @@ class_info = {
 @st.cache_resource
 def load_trained_model():
     try:
-        model = tf.keras.models.load_model("Skeen-Cancer/model2.h5", compile=False)
+        model = tf.keras.models.load_model("model2.h5", compile=False)
         return model
     except Exception as e:
         st.error(f"❌ Gagal memuat model: {e}")
