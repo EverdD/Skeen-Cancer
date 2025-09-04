@@ -22,10 +22,12 @@ class_info = {
 @st.cache_resource
 def load_trained_model():
     try:
-    model = tf.keras.models.load_model("model2.h5", compile=False)
-except Exception as e:
-    st.error(f"❌ Gagal memuat model: {e}")
-    st.stop()
+        model = tf.keras.models.load_model("model2.h5", compile=False)
+        return model
+    except Exception as e:
+        st.error(f"❌ Gagal memuat model: {e}")
+        return None
+
 
 def predict_image(image, model):
     # Resize dengan Pillow agar kompatibel di Streamlit Cloud
